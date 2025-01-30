@@ -125,3 +125,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 SESSION_COOKIE_AGE = 86400
+
+GOOGLE_CLIENT_ID = "362946292682-j6gl1uupr9l6v64caa3bl7s12kn4v52n.apps.googleusercontent.com"
+GOOGLE_CLIENT_SECRET = "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"
+GOOGLE_REDIRECT_URL = "http://127.0.0.1:12/google/callback/"
