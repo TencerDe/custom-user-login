@@ -51,4 +51,32 @@ def google_login(request):
         f"&redirect_uri={settings.GOOGLE_REDIRECT_URL}"
       )
 
+def google_callback(request):
+      code = request.GET.get("code")
+      if not code:
+            return redirect("log_in")
+      
+      token_url = "https://oauth2.googleapis.com/token"
+      token_data = {
+            "code": code,
+            "client_id": settings.GOOGLE_CLIENT_ID,
+            "client_secret": settings.GOOGLE_CLIENT_SECRET,
+            "redirect_uri": settings.GOOGLE_REDIRECT_URI,
+            "grant_type": "authorization_code",
+      }
+      token_response = requests.post(token_url, data=token_data).json()
+      access_token = token_response["access_token"]
 
+      if not access_token:
+            return redirect("log_in")
+      
+      user_info_url = "https://www.googleapis.com/oauth2/v2/userinfo"
+      user_info_response = requests.get(user_info_url, headers={"Authorization": f"Bearer {access_token}"}).json()
+
+      email = user_info_response.get("email")
+      name = user_info_response.get("name")
+
+      user, created =  CustomUser.objects.get_or_create(email=email, defaults={"username": name })
+      request.session["user_id"] = user.id
+
+      return redirect("dashboard")
