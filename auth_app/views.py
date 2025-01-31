@@ -21,22 +21,27 @@ def sign_up(request):
         return redirect("log_in")
     return render(request, 'sign_up.html')
 
-def log_in(request):
-           if request.method == "POST":
-                username = request.POST.get("username")
-                password = request.POST.get("password")
+from django.shortcuts import render, redirect
+from .models import CustomUser  # Ensure you import your user model
 
-                try:
-                      user = CustomUser.objects.get(username=username)
-                      if user.check_password(password):
-                            request.session["user_id"] = user.id
-                            return redirect("dashboard")
-                      else:
-                            return render(request, "log_in.html", {"error": "Invalid credentials"})
-                except CustomUser.DoesNotExist:
-                      return render(request, "log_in.html", {"error": "user not found"})
-                
-                return render(request,"log_in.html")
+def log_in(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+
+        try:
+            user = CustomUser.objects.get(username=username)
+            if user.check_password(password):
+                request.session["user_id"] = user.id
+                return redirect("dashboard")
+            else:
+                return render(request, "log_in.html", {"error": "Invalid credentials"})
+        except CustomUser.DoesNotExist:
+            return render(request, "log_in.html", {"error": "User not found"})
+
+    # This handles GET requests
+    return render(request, "log_in.html")
+
            
 def log_out(request):
       request.session.flush()
